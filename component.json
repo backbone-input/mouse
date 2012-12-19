@@ -1,0 +1,6 @@
+{
+  "name": "Backbone Mouse",
+  "version": "0.1.0",
+  "main": ["./backbone.mouse.js"],
+  "dependencies": { "backbone", "underscore", "jquery" }
+}
