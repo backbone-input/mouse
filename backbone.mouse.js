@@ -23,5 +23,29 @@
 
     "use strict";
 
+    _.extend(Backbone.View.prototype, {
+        state : {
+            hover : false
+        }
+        
+        events: {
+            'mouseover': '_mouseover',
+            'mousemove': '_mousemove'
+        },
+    
+        _mouseover: function( e ) {
+            this.state.hover = true;
+        }
+        
+        _mousemove: function( e ) {
+            this.mouse = {
+                x : e.pageX, 
+                y : e.pageY
+            };
+            if( this.update ) this.update();
+        }
+    
+    });
+
     return Backbone;
 }));
