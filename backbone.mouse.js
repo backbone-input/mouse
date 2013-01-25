@@ -26,7 +26,7 @@
     _.extend(Backbone.View.prototype, {
         state : {
             hover : false
-        }
+        }, 
         
         events: {
             'mouseover': '_mouseover',
@@ -35,7 +35,7 @@
     
         _mouseover: function( e ) {
             this.state.hover = true;
-        }
+        }, 
         
         _mousemove: function( e ) {
             this.mouse = {
