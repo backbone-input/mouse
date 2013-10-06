@@ -15,19 +15,26 @@
 	var MouseEnabled = View.extend({
 
 		options: {
-			//monitor
+			monitorMove: false
 		},
+		// use APP.Model if available?
+		params: new Backbone.Model({
+			mouse: { x: 0, y: 0 }
+		}),
 
 		state : {
 			hover : false
 		},
 		/* example events:*/
 		events: {
-			'mouseover *' : '_mouseover',
-			'mousemove *' : '_mousemove'
+			'mouseover' : '_mouseover',
+			'mousemove' : '_mousemove', // enable this instead of the iniit
+			'mousedown' : '_mousedown',
+			'mouseup' : '_mouseup'
 		},
-
-		monitor: function( state ){
+		// Deprecated:
+		/*
+		monitor: function(){
 
 			switch( state ){
 				case "move":
@@ -40,35 +47,39 @@
 
 			}
 
-
 		},
-
+		*/
 		_mousedown: function( e ) {
-			// set position of mouse
-			this.mouse = {
-				x : e.pageX,
-				y : e.pageY
-			};
-			// use clientX instead of pageX?
-			console.log("mouse pressed");
+			e.stopPropagation();
+			//console.log("mouse pressed", e);
 			if(this.mousedown) this.mousedown( e );
 		},
 
 		_mouseup: function( e ) {
-			console.log("mouse released");
+			e.stopPropagation();
+			//console.log("mouse released", e);
+			if(this.mouseup) this.mouseup( e );
 		},
 
 		_mouseover: function( e ) {
-			console.log("mouseover");
-			console.log( e );
+			//console.log("mouseover");
 			this.state.hover = true;
+			if(this.mouseover) this.mouseover( e );
 		},
 
 		_mousemove: function( e ) {
-			this.mouse = {
-				x : e.pageX,
-				y : e.pageY
-			};
+			// prerequisite
+			if( !this.options.monitorMove ) return;
+			// set position of mouse
+			this.params.set({
+				mouse : {
+					x : e.clientX,
+					y : e.clientY
+				}
+			});
+			// use pageX instead of clientX?
+			//console.log("mousemove", this);
+			if(this.mousemove) this.mousemove( e );
 		}
 
 	});
