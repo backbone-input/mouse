@@ -15,7 +15,7 @@
 	var MouseEnabled = View.extend({
 
 		options: {
-			monitor
+			//monitor
 		},
 
 		state : {
@@ -50,17 +50,17 @@
 				y : e.pageY
 			};
 			// use clientX instead of pageX?
-			//console.log("mouse pressed");
+			console.log("mouse pressed");
 			if(this.mousedown) this.mousedown( e );
 		},
 
 		_mouseup: function( e ) {
-			//console.log("mouse released");
+			console.log("mouse released");
 		},
 
 		_mouseover: function( e ) {
-			//console.log("mouseover");
-			//console.log( e );
+			console.log("mouseover");
+			console.log( e );
 			this.state.hover = true;
 		},
 
