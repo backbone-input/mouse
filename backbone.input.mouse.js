@@ -1,29 +1,22 @@
 /*
- * Backbone Mouse
- * - monitor mouse movements in your views
+ * Backbone Input: Mouse
+ * Source: https://github.com/backbone-input/mouse
  *
- * Created by: Makis Tracend (@tracend)
- * (c) Makesites.org
- *
- * Released under the MIT License
- *
+ * Created by Makis Tracend (@tracend)
+ * Distributed through [Makesites.org](http://makesites.org)
+ * Released under the [MIT license](http://makesites.org/licenses/MIT)
  */
- (function (factory) {
 
-	"use strict";
+(function($, _, Backbone, APP) {
 
-	//if (typeof define === 'function' && define.amd) {
-		// AMD. Register as an anonymous module.
-	//    define(['backbone', 'underscore', 'jquery'], factory);
-	//} else {
-		// Browser globals
-		factory(Backbone, _, $);
-	//}
-}(function (Backbone, _, $) {
+	// support for Backbone APP() view if available...
+	var View = ( typeof APP != "undefined" && !_.isUndefined( APP.View ) ) ? APP.View : Backbone.View;
 
-	"use strict";
+	var MouseEnabled = View.extend({
 
-	Backbone.View = Backbone.View.extend({
+		options: {
+			monitor
+		},
 
 		state : {
 			hover : false
@@ -66,8 +59,8 @@
 		},
 
 		_mouseover: function( e ) {
-			console.log("mouseover");
-			console.log( e );
+			//console.log("mouseover");
+			//console.log( e );
 			this.state.hover = true;
 		},
 
@@ -80,17 +73,42 @@
 
 	});
 
-// Helpers
+	// Helpers
 
-function bind( scope, fn ) {
+	function bind( scope, fn ) {
 
-	return function () {
+		return function () {
 
-		fn.apply( scope, arguments );
+			fn.apply( scope, arguments );
+
+		};
 
 	};
 
-};
+	// fallbacks
 
-	return Backbone;
-}));
+	// Support module loaders
+	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
+		// Expose as module.exports in loaders that implement CommonJS module pattern.
+		module.exports = MouseEnabled;
+	} else {
+		// Register as a named AMD module, used in Require.js
+		if ( typeof define === "function" && define.amd ) {
+			define( "backbone.input.mouse", [], function () { return MouseEnabled; } );
+		}
+	}
+	// If there is a window object, that at least has a document property
+	if ( typeof window === "object" && typeof window.document === "object" ) {
+		// update APP namespace
+		if( typeof APP != "undefined" && !_.isUndefined( APP.View ) ){
+			APP.View = MouseEnabled;
+			window.APP = APP;
+		} else {
+			Backbone.View = MouseEnabled;
+			window.Backbone = Backbone;
+			//return Backbone;
+		}
+	}
+
+
+})(this.jQuery, this._, this.Backbone, this.APP);
