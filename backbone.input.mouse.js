@@ -10,7 +10,8 @@
 (function($, _, Backbone, APP) {
 
 	// support for Backbone APP() view if available...
-	var View = ( typeof APP != "undefined" && !_.isUndefined( APP.View ) ) ? APP.View : Backbone.View;
+	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
+	var View = ( isAPP ) ? APP.View : Backbone.View;
 
 	var MouseEnabled = View.extend({
 
@@ -111,7 +112,7 @@
 	// If there is a window object, that at least has a document property
 	if ( typeof window === "object" && typeof window.document === "object" ) {
 		// update APP namespace
-		if( typeof APP != "undefined" && !_.isUndefined( APP.View ) ){
+		if( isAPP ){
 			APP.View = MouseEnabled;
 			window.APP = APP;
 		} else {
