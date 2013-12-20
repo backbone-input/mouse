@@ -16,7 +16,8 @@
 	var Mouse = View.extend({
 
 		options: {
-			monitorMove: false
+			monitorMove: false,
+			monitor: [] // possible values: "up", "down", "move", "over", "drag"
 		},
 		// use APP.Model if available?
 		params: new Backbone.Model({
@@ -51,18 +52,27 @@
 		},
 		*/
 		_mousedown: function( e ) {
+			// prerequisite
+			var monitor = _.inArray("down", this.options.monitor);
+			if( !monitor ) return;
 			e.stopPropagation();
 			//console.log("mouse pressed", e);
 			if(this.mousedown) this.mousedown( e );
 		},
 
 		_mouseup: function( e ) {
+			// prerequisite
+			var monitor = _.inArray("up", this.options.monitor);
+			if( !monitor ) return;
 			e.stopPropagation();
 			//console.log("mouse released", e);
 			if(this.mouseup) this.mouseup( e );
 		},
 
 		_mouseover: function( e ) {
+			// prerequisite
+			var monitor = _.inArray("over", this.options.monitor);
+			if( !monitor ) return;
 			//console.log("mouseover");
 			this.state.hover = true;
 			if(this.mouseover) this.mouseover( e );
@@ -70,7 +80,8 @@
 
 		_mousemove: function( e ) {
 			// prerequisite
-			if( !this.options.monitorMove ) return;
+			var monitor = this.options.monitorMove || _.inArray("move", this.options.monitor);
+			if( !monitor ) return;
 			// set position of mouse
 			this.params.set({
 				mouse : {
@@ -96,6 +107,13 @@
 		};
 
 	};
+
+	//
+	_.mixin({
+		inArray: function(value, array){
+			return array.indexOf(value) > -1;
+		}
+	});
 
 	// fallbacks
 	if( _.isUndefined( Backbone.Input ) ) Backbone.Input = {};
