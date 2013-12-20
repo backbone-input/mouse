@@ -25,14 +25,22 @@
 		}),
 
 		state : {
-			hover : false
+			hover : false,
+			drag : false
 		},
 		/* example events:*/
 		events: {
 			'mouseover' : '_mouseover',
 			'mousemove' : '_mousemove', // enable this instead of the iniit
 			'mousedown' : '_mousedown',
-			'mouseup' : '_mouseup'
+			'mouseup' : '_mouseup',
+			// drag events
+			'dragstart' : '_dragstart',
+			'dragenter' : '_dragenter',
+			'dragover' : '_dragover',
+			'dragleave' : '_dragleave',
+			'drop' : '_drop',
+			'dragend' : '_dragend'
 		},
 		// Deprecated:
 		/*
@@ -92,6 +100,27 @@
 			// use pageX instead of clientX?
 			//console.log("mousemove", this);
 			if(this.mousemove) this.mousemove( e );
+		},
+		// drag events callbacks
+		_dragstart: function( e ) {
+			console.log("_dragstart");
+			this.state.drag = true;
+		},
+		_dragenter: function( e ) {
+			console.log("_dragenter");
+		},
+		_dragover: function( e ) {
+			console.log("_dragover");
+		},
+		_dragleave: function( e ) {
+			console.log("_dragleave");
+		},
+		_drop: function( e ) {
+			console.log("_drop");
+		},
+		_dragend: function( e ) {
+			console.log("_dragend");
+			this.state.drag = false;
 		}
 
 	});
