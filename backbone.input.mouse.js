@@ -1,8 +1,8 @@
-/*
- * Backbone Input: Mouse
+/* Backbone Input: Mouse
  * Source: https://github.com/backbone-input/mouse
+ * Copyright © Makesites.org
  *
- * Created by Makis Tracend (@tracend)
+ * Initiated by Makis Tracend (@tracend)
  * Distributed through [Makesites.org](http://makesites.org)
  * Released under the [MIT license](http://makesites.org/licenses/MIT)
  */
@@ -13,7 +13,7 @@
 	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
 	var View = ( isAPP ) ? APP.View : Backbone.View;
 
-	var MouseEnabled = View.extend({
+	var Mouse = View.extend({
 
 		options: {
 			monitorMove: false
@@ -98,28 +98,36 @@
 	};
 
 	// fallbacks
+	if( _.isUndefined( Backbone.Input ) ) Backbone.Input = {};
+	Backbone.Input.Mouse = Mouse;
 
 	// Support module loaders
 	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
 		// Expose as module.exports in loaders that implement CommonJS module pattern.
-		module.exports = MouseEnabled;
+		module.exports = Mouse;
 	} else {
 		// Register as a named AMD module, used in Require.js
 		if ( typeof define === "function" && define.amd ) {
-			define( "backbone.input.mouse", [], function () { return MouseEnabled; } );
+			//define( "backbone.input.mouse", [], function () { return Mouse; } );
+			//define( ['underscore', 'backbone'], function () { return Mouse; } );
+			define( [], function () { return Mouse; } );
 		}
 	}
 	// If there is a window object, that at least has a document property
 	if ( typeof window === "object" && typeof window.document === "object" ) {
 		// update APP namespace
 		if( isAPP ){
-			APP.View = MouseEnabled;
+			APP.View = Mouse;
+			APP.Input = APP.Input || {};
+			APP.Input.Mouse = Backbone.Input.Mouse;
+			// save namespace
 			window.APP = APP;
 		} else {
-			Backbone.View = MouseEnabled;
-			window.Backbone = Backbone;
-			//return Backbone;
+			// update Backbone namespace
+			Backbone.View = Mouse;
 		}
+		// save Backbone namespace either way
+		window.Backbone = Backbone;
 	}
 
 
