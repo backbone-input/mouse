@@ -115,6 +115,7 @@
 			this.state.drag = true;
 			//e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
 			this.trigger("dragstart", e);
+			this.trigger("drag", e);
 		},
 		_dragenter: function( e ) {
 			var monitor = _.inArray("drag", this.options.monitor);
