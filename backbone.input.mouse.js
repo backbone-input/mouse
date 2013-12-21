@@ -12,6 +12,8 @@
 	// support for Backbone APP() view if available...
 	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
 	var View = ( isAPP ) ? APP.View : Backbone.View;
+	// FIX: jQuery pass dataTransfer property
+	if( jQuery ) jQuery.event.props.push('dataTransfer');
 
 	var Mouse = View.extend({
 
@@ -63,8 +65,9 @@
 			// prerequisite
 			var monitor = _.inArray("down", this.options.monitor);
 			if( !monitor ) return;
-			e.stopPropagation();
-			//console.log("mouse pressed", e);
+			if (e.stopPropagation) e.stopPropagation();
+			if( _.inDebug() ) console.log("mouse pressed", e);
+			this.trigger("mousedown", e);
 			if(this.mousedown) this.mousedown( e );
 		},
 
@@ -72,8 +75,9 @@
 			// prerequisite
 			var monitor = _.inArray("up", this.options.monitor);
 			if( !monitor ) return;
-			e.stopPropagation();
-			//console.log("mouse released", e);
+			if (e.stopPropagation) e.stopPropagation();
+			if( _.inDebug() ) console.log("mouse released", e);
+			this.trigger("mouseup", e);
 			if(this.mouseup) this.mouseup( e );
 		},
 
@@ -83,6 +87,7 @@
 			if( !monitor ) return;
 			//console.log("mouseover");
 			this.state.hover = true;
+			//this.trigger("mouseover", e);
 			if(this.mouseover) this.mouseover( e );
 		},
 
@@ -98,28 +103,53 @@
 				}
 			});
 			// use pageX instead of clientX?
-			//console.log("mousemove", this);
+			if( _.inDebug() ) console.log("mousemove", this);
 			if(this.mousemove) this.mousemove( e );
 		},
 		// drag events callbacks
 		_dragstart: function( e ) {
-			console.log("_dragstart");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_dragstart");
+			//if (e.preventDefault) e.preventDefault();
 			this.state.drag = true;
+			//e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
+			this.trigger("drag", e);
 		},
 		_dragenter: function( e ) {
-			console.log("_dragenter");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_dragenter");
+			//if (e.preventDefault) e.preventDefault();
+			return false;
 		},
 		_dragover: function( e ) {
-			console.log("_dragover");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_dragover");
+			if (e.preventDefault) e.preventDefault();
+			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 		},
 		_dragleave: function( e ) {
-			console.log("_dragleave");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_dragleave");
+			//if (e.preventDefault) e.preventDefault();
 		},
 		_drop: function( e ) {
-			console.log("_drop");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_drop");
+			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
+			this.trigger("drop", e);
+			return false;
 		},
 		_dragend: function( e ) {
-			console.log("_dragend");
+			var monitor = _.inArray("drag", this.options.monitor);
+			if( !monitor ) return;
+			if( _.inDebug() ) console.log("_dragend");
+			//if (e.preventDefault) e.preventDefault();
+			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 			this.state.drag = false;
 		}
 
@@ -137,10 +167,15 @@
 
 	};
 
-	//
+	// helpers
 	_.mixin({
 		inArray: function(value, array){
 			return array.indexOf(value) > -1;
+		},
+		// - Check if in debug mode (requires the existence of a global DEBUG var)
+		// Usage: _.inDebug()
+		inDebug : function() {
+			return ( typeof DEBUG != "undefined" && DEBUG );
 		}
 	});
 
