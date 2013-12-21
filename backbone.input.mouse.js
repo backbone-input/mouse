@@ -114,13 +114,14 @@
 			//if (e.preventDefault) e.preventDefault();
 			this.state.drag = true;
 			//e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
-			this.trigger("drag", e);
+			this.trigger("dragstart", e);
 		},
 		_dragenter: function( e ) {
 			var monitor = _.inArray("drag", this.options.monitor);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragenter");
 			//if (e.preventDefault) e.preventDefault();
+			this.trigger("dragenter", e);
 			return false;
 		},
 		_dragover: function( e ) {
@@ -129,12 +130,14 @@
 			if( _.inDebug() ) console.log("_dragover");
 			if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
+			this.trigger("dragover", e);
 		},
 		_dragleave: function( e ) {
 			var monitor = _.inArray("drag", this.options.monitor);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragleave");
 			//if (e.preventDefault) e.preventDefault();
+			this.trigger("dragleave", e);
 		},
 		_drop: function( e ) {
 			var monitor = _.inArray("drag", this.options.monitor);
@@ -150,6 +153,7 @@
 			if( _.inDebug() ) console.log("_dragend");
 			//if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
+			this.trigger("dragend", e);
 			this.state.drag = false;
 		}
 
