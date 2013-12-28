@@ -7,13 +7,14 @@
  * Released under the [MIT license](http://makesites.org/licenses/MIT)
  */
 
-(function($, _, Backbone, APP) {
+(function(w, _, Backbone, APP) {
 
 	// support for Backbone APP() view if available...
 	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
 	var View = ( isAPP ) ? APP.View : Backbone.View;
+	var $ = w.jQuery || w.Zepto || w.$;
 	// FIX: jQuery pass dataTransfer property
-	if( jQuery ) jQuery.event.props.push('dataTransfer');
+	if( w.jQuery ) w.jQuery.event.props.push('dataTransfer');
 
 	var Mouse = View.extend({
 
@@ -218,4 +219,4 @@
 	}
 
 
-})(this.jQuery, this._, this.Backbone, this.APP);
+})(this.window, this._, this.Backbone, this.APP);
