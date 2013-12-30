@@ -32,7 +32,7 @@
 			drag : false
 		},
 		/* example events:*/
-		events: {
+		events: _.extend({}, View.prototype.events, {
 			'mouseover' : '_mouseover',
 			'mousemove' : '_mousemove', // enable this instead of the iniit
 			'mousedown' : '_mousedown',
@@ -44,7 +44,7 @@
 			'dragleave' : '_dragleave',
 			'drop' : '_drop',
 			'dragend' : '_dragend'
-		},
+		}),
 		// Deprecated:
 		/*
 		monitor: function(){
