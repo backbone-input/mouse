@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.2.0 (Wed, 02 Apr 2014 02:55:39 GMT)
+ * Version: 0.3.0 (Wed, 02 Apr 2014 03:02:08 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites

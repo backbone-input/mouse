@@ -1,6 +1,6 @@
 {
-  "name": "backbone.input.mouse",
-  "version": "0.2.0",
-  "main": ["./backbone.input.mouse.js"],
-  "dependencies": { "backbone", "underscore", "jquery" }
+	"name": "backbone.input.mouse",
+	"version": "0.3.0",
+	"main": ["./build/backbone.input.mouse.js"],
+	"dependencies": { "backbone", "underscore", "jquery" }
 }
