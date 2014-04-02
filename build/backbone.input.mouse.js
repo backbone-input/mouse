@@ -1,10 +1,15 @@
-/* Backbone Input: Mouse
- * Source: https://github.com/backbone-input/mouse
- * Copyright © Makesites.org
+/**
+ * @name backbone.input.mouse
+ * Mouse event bindings for Backbone views
  *
- * Initiated by Makis Tracend (@tracend)
- * Distributed through [Makesites.org](http://makesites.org)
- * Released under the [MIT license](http://makesites.org/licenses/MIT)
+ * Version: 0.2.0 (Wed, 02 Apr 2014 02:55:39 GMT)
+ * Homepage: https://github.com/backbone-input/mouse
+ *
+ * @author makesites
+ * Initiated by: Makis Tracend (@tracend)
+ *
+ * @cc_on Copyright © Makesites.org
+ * @license MIT license
  */
 
 (function(w, _, Backbone, APP) {
@@ -15,6 +20,8 @@
 	var $ = w.jQuery || w.Zepto || w.$;
 	// FIX: jQuery pass dataTransfer property
 	if( w.jQuery ) w.jQuery.event.props.push('dataTransfer');
+
+
 
 	var Mouse = View.extend({
 
@@ -171,7 +178,7 @@
 
 		};
 
-	};
+	}
 
 	// helpers
 	_.mixin({
@@ -184,6 +191,7 @@
 			return ( typeof DEBUG != "undefined" && DEBUG );
 		}
 	});
+
 
 	// fallbacks
 	if( _.isUndefined( Backbone.Input ) ) Backbone.Input = {};
