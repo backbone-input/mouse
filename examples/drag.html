@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+
+	<style>
+		* { -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; margin: 0; padding: 0; }
+
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+
+		div {
+			width: 300px;
+			margin: 8px;
+			padding: 8px;
+			border: solid 1px #ccc;
+			text-align: center;
+			-webkit-user-select: none;
+			-webkit-highlight: none;
+		}
+
+	</style>
+</head>
+<body>
+
+	<div class="drag">
+		You can drag this element
+	</div>
+
+
+<!-- Dependencies -->
+<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/json3/3.2.4/json3.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+
+<!-- Extension lib -->
+<script src="../build/backbone.input.mouse.js"></script>
+
+<script type="text/javascript">
+	var DEBUG = true;
+
+var View = Backbone.View.extend({
+	render: function(){
+		// add draggable attribute
+		$(this.el).attr("draggable", true);
+		this.on("drag", _.bind(this.onDragStart, this) );
+		this.on("up", _.bind(this.onMouseUp, this) );
+	},
+
+	onDragStart: function( e ){
+		// save el current position
+		//e.dataTransfer.effectAllowed = 'move';
+		// hide original element
+		//$(e.target).hide();
+	},
+
+	onMouseUp: function( e ){
+		// save el current position
+		console.log("e", e.dataTransfer);
+		// reveal dom element with new position
+	}
+});
+
+var drag = new View({
+		el : ".drag",
+		monitor: ["drag", "up"]
+});
+drag.render();
+</script>
+
+</body>
+</html>
