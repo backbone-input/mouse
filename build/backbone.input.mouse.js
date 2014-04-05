@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Sat, 05 Apr 2014 01:07:42 GMT)
+ * Version: 0.3.0 (Sat, 05 Apr 2014 04:18:26 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -34,21 +34,24 @@ params.set({
 
 		options: {
 			monitorMove: false,
-			monitor: [] // possible values: "up", "down", "move", "over", "drag"
+			monitor: [], // add "mouse" to initiate monitoring
+			mouse: {
+				states: ["up", "down", "move", "over", "drag"] // limit the monitored actions by defining a subset
+			}
 		},
-		// use APP.Model if available?
+
 		params: params,
 
 		state : {
 			hover : false,
 			drag : false
 		},
-		/* example events:*/
+
 		events: _.extend({}, View.prototype.events, {
-			'mouseover' : '_mouseover',
-			'mousemove' : '_mousemove', // enable this instead of the iniit
-			'mousedown' : '_mousedown',
-			'mouseup' : '_mouseup',
+			//'mouseover' : '_mouseover',
+			//'mousemove' : '_mousemove', // enable these instead of _monitorMouse
+			//'mousedown' : '_mousedown',
+			//'mouseup' : '_mouseup',
 			// drag events
 			'dragstart' : '_dragstart',
 			'dragenter' : '_dragenter',
@@ -58,25 +61,36 @@ params.set({
 			'dragend' : '_dragend'
 		}),
 		// Deprecated:
-		/*
-		monitor: function(){
+		initialize: function( options ){
 
-			switch( state ){
-				case "move":
-					this.el.addEventListener( 'mousemove', bind( this, this._mousemove ), false );
-				break;
-				case "click":
-					this.el.addEventListener( 'mousedown', bind( this, this._mousedown ), false );
-					this.el.addEventListener( 'mouseup',   bind( this, this._mouseup ), false );
-				break;
+			var monitor = this.options.monitorMove || _.inArray("mouse", this.options.monitor);
+			if( monitor ){
+				this._monitorMouse();
+			}
 
+			return View.prototype.initialize.call( this, options );
+		},
+
+		_monitorMouse: function(){
+
+			var states = this.options.mouse.states;
+
+			if( _.inArray("move", states) ){
+				this.el.addEventListener( 'mousemove', bind( this, this._mousemove ), false );
+			}
+			if( _.inArray("down", states) ){
+				this.el.addEventListener( 'mousedown', bind( this, this._mousedown ), false );
+			}
+
+			if( _.inArray("up", states) ){
+				this.el.addEventListener( 'mouseup',   bind( this, this._mouseup ), false );
 			}
 
 		},
-		*/
+
 		_mousedown: function( e ) {
 			// prerequisite
-			var monitor = _.inArray("down", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("down", this.options.mouse.states);
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("mouse pressed", e);
@@ -86,7 +100,7 @@ params.set({
 
 		_mouseup: function( e ) {
 			// prerequisite
-			var monitor = _.inArray("up", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("up", this.options.mouse.states);
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("mouse released", e);
@@ -96,7 +110,7 @@ params.set({
 
 		_mouseover: function( e ) {
 			// prerequisite
-			var monitor = _.inArray("over", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("over", this.options.mouse.states);
 			if( !monitor ) return;
 			//console.log("mouseover");
 			this.state.hover = true;
@@ -106,7 +120,7 @@ params.set({
 
 		_mousemove: function( e ) {
 			// prerequisite
-			var monitor = this.options.monitorMove || _.inArray("move", this.options.monitor);
+			var monitor = (this.options.monitorMove || _.inArray("mouse", this.options.monitor) ) && _.inArray("move", this.options.mouse.states);
 			if( !monitor ) return;
 			// set position of mouse
 			this.params.set({
@@ -121,7 +135,7 @@ params.set({
 		},
 		// drag events callbacks
 		_dragstart: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragstart");
 			//if (e.preventDefault) e.preventDefault();
@@ -131,7 +145,7 @@ params.set({
 			this.trigger("drag", e);
 		},
 		_dragenter: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragenter");
 			//if (e.preventDefault) e.preventDefault();
@@ -139,7 +153,7 @@ params.set({
 			return false;
 		},
 		_dragover: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragover");
 			if (e.preventDefault) e.preventDefault();
@@ -147,14 +161,14 @@ params.set({
 			this.trigger("dragover", e);
 		},
 		_dragleave: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragleave");
 			//if (e.preventDefault) e.preventDefault();
 			this.trigger("dragleave", e);
 		},
 		_drop: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_drop");
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
@@ -162,7 +176,7 @@ params.set({
 			return false;
 		},
 		_dragend: function( e ) {
-			var monitor = _.inArray("drag", this.options.monitor);
+			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragend");
 			//if (e.preventDefault) e.preventDefault();
