@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Sat, 05 Apr 2014 00:52:33 GMT)
+ * Version: 0.3.0 (Sat, 05 Apr 2014 01:07:42 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -26,7 +26,7 @@
 var params = View.prototype.params || new Backbone.Model();
 
 // defaults
-parmas.set({
+params.set({
 	mouse: { x: 0, y: 0 }
 });
 
