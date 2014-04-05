@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Wed, 02 Apr 2014 03:02:08 GMT)
+ * Version: 0.3.0 (Sat, 05 Apr 2014 00:52:33 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -22,6 +22,13 @@
 	if( w.jQuery ) w.jQuery.event.props.push('dataTransfer');
 
 
+// extend existing params
+var params = View.prototype.params || new Backbone.Model();
+
+// defaults
+parmas.set({
+	mouse: { x: 0, y: 0 }
+});
 
 	var Mouse = View.extend({
 
@@ -30,9 +37,7 @@
 			monitor: [] // possible values: "up", "down", "move", "over", "drag"
 		},
 		// use APP.Model if available?
-		params: new Backbone.Model({
-			mouse: { x: 0, y: 0 }
-		}),
+		params: params,
 
 		state : {
 			hover : false,
