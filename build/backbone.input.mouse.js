@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Sat, 05 Apr 2014 04:18:26 GMT)
+ * Version: 0.3.0 (Sat, 12 Apr 2014 06:16:08 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -60,7 +60,7 @@ params.set({
 			'drop' : '_drop',
 			'dragend' : '_dragend'
 		}),
-		// Deprecated:
+		//
 		initialize: function( options ){
 
 			var monitor = this.options.monitorMove || _.inArray("mouse", this.options.monitor);
@@ -72,18 +72,19 @@ params.set({
 		},
 
 		_monitorMouse: function(){
-
+			// prerequisite
+			if( !this.el ) return;
+			// variables
 			var states = this.options.mouse.states;
 
 			if( _.inArray("move", states) ){
-				this.el.addEventListener( 'mousemove', bind( this, this._mousemove ), false );
+				this.el.addEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
 			}
 			if( _.inArray("down", states) ){
-				this.el.addEventListener( 'mousedown', bind( this, this._mousedown ), false );
+				this.el.addEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
 			}
-
 			if( _.inArray("up", states) ){
-				this.el.addEventListener( 'mouseup',   bind( this, this._mouseup ), false );
+				this.el.addEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
 			}
 
 		},
@@ -212,10 +213,6 @@ params.set({
 	});
 
 
-	// fallbacks
-	if( _.isUndefined( Backbone.Input ) ) Backbone.Input = {};
-	Backbone.Input.Mouse = Mouse;
-
 	// Support module loaders
 	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
 		// Expose as module.exports in loaders that implement CommonJS module pattern.
@@ -234,14 +231,14 @@ params.set({
 		if( isAPP ){
 			APP.View = Mouse;
 			APP.Input = APP.Input || {};
-			APP.Input.Mouse = Backbone.Input.Mouse;
+			APP.Input.Mouse = Mouse;
 			// save namespace
 			window.APP = APP;
-		} else {
-			// update Backbone namespace
-			Backbone.View = Mouse;
 		}
-		// save Backbone namespace either way
+		// update Backbone namespace regardless
+		Backbone.View = Mouse;
+		Backbone.Input = Backbone.Input || {};
+		Backbone.Input.Mouse = Mouse;
 		window.Backbone = Backbone;
 	}
 
