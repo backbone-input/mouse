@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Sat, 12 Apr 2014 06:16:08 GMT)
+ * Version: 0.3.0 (Thu, 17 Sep 2015 07:23:56 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -62,7 +62,11 @@ params.set({
 		}),
 		//
 		initialize: function( options ){
-
+			// fallbacks
+			options = options || {};
+			// extending options
+			this.options = _.extend({}, this.options, options );
+			// check monitor options
 			var monitor = this.options.monitorMove || _.inArray("mouse", this.options.monitor);
 			if( monitor ){
 				this._monitorMouse();
@@ -234,9 +238,10 @@ params.set({
 			APP.Input.Mouse = Mouse;
 			// save namespace
 			window.APP = APP;
+		} else {
+			Backbone.View = Mouse;
 		}
 		// update Backbone namespace regardless
-		Backbone.View = Mouse;
 		Backbone.Input = Backbone.Input || {};
 		Backbone.Input.Mouse = Mouse;
 		window.Backbone = Backbone;
