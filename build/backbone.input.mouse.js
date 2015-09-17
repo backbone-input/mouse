@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.0 (Thu, 17 Sep 2015 07:23:56 GMT)
+ * Version: 0.3.3 (Thu, 17 Sep 2015 08:02:55 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -27,8 +27,21 @@ var params = View.prototype.params || new Backbone.Model();
 
 // defaults
 params.set({
-	mouse: { x: 0, y: 0 }
+	mouse: { x: 0, y: 0 },
+	distance: 0
 });
+
+// extend existing params
+var state = View.prototype.state || new Backbone.Model();
+
+// defaults
+state.set({
+	hover : false,
+	drag : false,
+	pressing: false
+});
+
+
 
 	var Mouse = View.extend({
 
@@ -42,10 +55,7 @@ params.set({
 
 		params: params,
 
-		state : {
-			hover : false,
-			drag : false
-		},
+		state: state,
 
 		events: _.extend({}, View.prototype.events, {
 			//'mouseover' : '_mouseover',
@@ -99,6 +109,8 @@ params.set({
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("mouse pressed", e);
+			// set state
+			this.state.set("pressing", true);
 			this.trigger("mousedown", e);
 			if(this.mousedown) this.mousedown( e );
 		},
@@ -109,6 +121,8 @@ params.set({
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("mouse released", e);
+			// set state
+			this.state.set("pressing", false);
 			this.trigger("mouseup", e);
 			if(this.mouseup) this.mouseup( e );
 		},
@@ -118,7 +132,7 @@ params.set({
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("over", this.options.mouse.states);
 			if( !monitor ) return;
 			//console.log("mouseover");
-			this.state.hover = true;
+			this.state.set("hover", true);
 			//this.trigger("mouseover", e);
 			if(this.mouseover) this.mouseover( e );
 		},
@@ -144,7 +158,7 @@ params.set({
 			if( !monitor ) return;
 			if( _.inDebug() ) console.log("_dragstart");
 			//if (e.preventDefault) e.preventDefault();
-			this.state.drag = true;
+			this.state.set("drag", true);
 			//e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
 			this.trigger("dragstart", e);
 			this.trigger("drag", e);
@@ -187,7 +201,7 @@ params.set({
 			//if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 			this.trigger("dragend", e);
-			this.state.drag = false;
+			this.state.set("drag", false);
 		}
 
 	});
