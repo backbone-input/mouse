@@ -1,6 +1,18 @@
 {
 	"name": "backbone.input.mouse",
 	"version": "0.3.3",
-	"main": ["./build/backbone.input.mouse.js"],
-	"dependencies": { "backbone", "underscore", "jquery" }
+	"license": "MIT",
+	"main": "./build/backbone.input.mouse.js",
+	"keywords": [
+			"backbone-input"
+	],
+	"ignore": [
+		"**/.*",
+		"test/*"
+	],
+	"dependencies": {
+		"backbone": ">=1.0.0",
+		"underscore": ">=1.4.4",
+		"jquery": ">=2.0.3"
+	}
 }
