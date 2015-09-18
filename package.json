@@ -1,6 +1,6 @@
 {
 	"name": "backbone.input.mouse",
-	"version": "0.3.3",
+	"version": "0.4.0",
 	"author": "makesites",
 	"description": "Mouse event bindings for Backbone views",
 	"homepage": "https://github.com/backbone-input/mouse",
