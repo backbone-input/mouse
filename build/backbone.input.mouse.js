@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.3.3 (Thu, 17 Sep 2015 08:02:55 GMT)
+ * Version: 0.4.0 (Sun, 26 Jun 2016 01:24:29 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -19,7 +19,7 @@
 	var View = ( isAPP ) ? APP.View : Backbone.View;
 	var $ = w.jQuery || w.Zepto || w.$;
 	// FIX: jQuery pass dataTransfer property
-	if( w.jQuery ) w.jQuery.event.props.push('dataTransfer');
+	if( w.jQuery ) w.jQuery.event.addProp('dataTransfer');
 
 
 // extend existing params
