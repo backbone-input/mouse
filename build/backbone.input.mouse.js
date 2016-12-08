@@ -2,24 +2,43 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.4.0 (Sun, 26 Jun 2016 01:24:29 GMT)
+ * Version: 0.4.1 (Thu, 08 Dec 2016 05:39:45 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
- * Initiated by: Makis Tracend (@tracend)
+ * Initiated by Makis Tracend (@tracend)
  *
  * @cc_on Copyright © Makesites.org
  * @license MIT license
  */
 
-(function(w, _, Backbone, APP) {
+(function (lib) {
+
+	//"use strict";
+
+	// Support module loaders
+	if (typeof define === 'function' && define.amd) {
+		// AMD. Register as an anonymous module.
+		define('backbone.input.mouse', ['jquery', 'underscore', 'backbone'], lib);
+	} else if ( typeof module === "object" && module && typeof module.exports === "object" ){
+		// Expose as module.exports in loaders that implement CommonJS module pattern.
+		module.exports = lib;
+	} else {
+		// Browser globals
+		// - getting the available query lib
+		var $ = window.jQuery || window.Zepto || window.vQuery;
+		lib($, window._, window.Backbone);
+	}
+
+}(function ($, _, Backbone) {
 
 	// support for Backbone APP() view if available...
-	var isAPP = ( typeof APP !== "undefined" && typeof APP.View !== "undefined" );
-	var View = ( isAPP ) ? APP.View : Backbone.View;
-	var $ = w.jQuery || w.Zepto || w.$;
+	var APP = APP || window.APP || null;
+	var isAPP = ( APP !== null );
+	var View = ( isAPP && typeof APP.View !== "undefined" ) ? APP.View : Backbone.View;
+
 	// FIX: jQuery pass dataTransfer property
-	if( w.jQuery ) w.jQuery.event.addProp('dataTransfer');
+	if( window.jQuery ) window.jQuery.event.addProp('dataTransfer');
 
 
 // extend existing params
@@ -57,9 +76,10 @@ state.set({
 
 		state: state,
 
+		// enable these instead of _monitorX methods
 		events: _.extend({}, View.prototype.events, {
 			//'mouseover' : '_mouseover',
-			//'mousemove' : '_mousemove', // enable these instead of _monitorMouse
+			//'mousemove' : '_mousemove',
 			//'mousedown' : '_mousedown',
 			//'mouseup' : '_mouseup',
 			// drag events
@@ -79,13 +99,29 @@ state.set({
 			// check monitor options
 			var monitor = this.options.monitorMove || _.inArray("mouse", this.options.monitor);
 			if( monitor ){
-				this._monitorMouse();
+				this._monitorMouseOn();
 			}
 
 			return View.prototype.initialize.call( this, options );
 		},
 
-		_monitorMouse: function(){
+		// interface methods
+		monitorMouseOn: function(){
+			// internal logic
+			this._monitorMouseOn();
+			// trigger event
+			this.trigger('monitor-mouse-on');
+		},
+
+		monitorMouseOff: function(){
+			// internal logic
+			this._monitorMouseOff();
+			// trigger event
+			this.trigger('monitor-mouse-off');
+		},
+
+		// internal logic
+		_monitorMouseOn: function(){
 			// prerequisite
 			if( !this.el ) return;
 			// variables
@@ -103,6 +139,24 @@ state.set({
 
 		},
 
+		_monitorMouseOff: function(){
+			// prerequisite
+			if( !this.el ) return;
+			// variables
+			var states = this.options.mouse.states;
+
+			if( _.inArray("move", states) ){
+				this.el.removeEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
+			}
+			if( _.inArray("down", states) ){
+				this.el.removeEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
+			}
+			if( _.inArray("up", states) ){
+				this.el.removeEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
+			}
+		},
+
+		// events
 		_mousedown: function( e ) {
 			// prerequisite
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("down", this.options.mouse.states);
@@ -231,35 +285,25 @@ state.set({
 	});
 
 
-	// Support module loaders
-	if ( typeof module === "object" && module && typeof module.exports === "object" ) {
-		// Expose as module.exports in loaders that implement CommonJS module pattern.
-		module.exports = Mouse;
-	} else {
-		// Register as a named AMD module, used in Require.js
-		if ( typeof define === "function" && define.amd ) {
-			//define( "backbone.input.mouse", [], function () { return Mouse; } );
-			//define( ['underscore', 'backbone'], function () { return Mouse; } );
-			define( [], function () { return Mouse; } );
-		}
+	// update Backbone namespace regardless
+	Backbone.Input = Backbone.Input ||{};
+	Backbone.Input.Mouse = Mouse;
+	// update APP namespace
+	if( isAPP ){
+		APP.Input = APP.Input || {};
+		APP.Input.Mouse = Mouse;
 	}
+
 	// If there is a window object, that at least has a document property
-	if ( typeof window === "object" && typeof window.document === "object" ) {
+	if( typeof window === "object" && typeof window.document === "object" ){
+		window.Backbone = Backbone;
 		// update APP namespace
 		if( isAPP ){
-			APP.View = Mouse;
-			APP.Input = APP.Input || {};
-			APP.Input.Mouse = Mouse;
-			// save namespace
 			window.APP = APP;
-		} else {
-			Backbone.View = Mouse;
 		}
-		// update Backbone namespace regardless
-		Backbone.Input = Backbone.Input || {};
-		Backbone.Input.Mouse = Mouse;
-		window.Backbone = Backbone;
 	}
 
+	// Support module loaders
+	return Mouse;
 
-})(this.window, this._, this.Backbone, this.APP);
+}));
