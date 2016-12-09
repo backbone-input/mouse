@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.4.1 (Thu, 08 Dec 2016 05:39:45 GMT)
+ * Version: 0.4.2 (Fri, 09 Dec 2016 01:56:39 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -38,7 +38,27 @@
 	var View = ( isAPP && typeof APP.View !== "undefined" ) ? APP.View : Backbone.View;
 
 	// FIX: jQuery pass dataTransfer property
-	if( window.jQuery ) window.jQuery.event.addProp('dataTransfer');
+	if( window && window.jQuery ){
+		var jQuery = window.jQuery;
+		if (jQuery.event.addProp) {
+			jQuery.event.addProp('dataTransfer');
+		} else {
+			// reference: https://html.spec.whatwg.org/multipage/interaction.html#dndevents
+			['dragstart', 'drag', 'dragenter', 'dragleave', 'dragover', 'drop', 'dragend'].forEach(function(eventName){
+				jQuery.event.fixHooks[eventName] = {
+					props: ['dataTransfer']
+				};
+			});
+			/*
+			// assume ES6 support?
+			['dragstart', 'drag', 'dragenter', 'dragleave', 'dragover', 'drop', 'dragend'].forEach(eventName => {
+				jQuery.event.fixHooks[eventName] = {
+					props: ['dataTransfer']
+				};
+			});
+			*/
+		}
+	}
 
 
 // extend existing params
@@ -97,27 +117,31 @@ state.set({
 			// extending options
 			this.options = _.extend({}, this.options, options );
 			// check monitor options
-			var monitor = this.options.monitorMove || _.inArray("mouse", this.options.monitor);
+			var monitor = this.options.monitorMouse || _.inArray("mouse", this.options.monitor);
 			if( monitor ){
-				this._monitorMouseOn();
+				this.monitorMouse();
 			}
 
 			return View.prototype.initialize.call( this, options );
 		},
 
-		// interface methods
-		monitorMouseOn: function(){
-			// internal logic
-			this._monitorMouseOn();
-			// trigger event
-			this.trigger('monitor-mouse-on');
-		},
+		// interface method
+		monitorMouse: function( flag ){
+			// fallbacks
+			flag = flag || true;
+			// branch out
+			if( flag ){
+				// internal logic
+				this._monitorMouseOn();
+				// trigger event
+				this.trigger('monitor-mouse-on');
+			} else {
+				// internal logic
+				this._monitorMouseOff();
+				// trigger event
+				this.trigger('monitor-mouse-off');
+			}
 
-		monitorMouseOff: function(){
-			// internal logic
-			this._monitorMouseOff();
-			// trigger event
-			this.trigger('monitor-mouse-off');
 		},
 
 		// internal logic
