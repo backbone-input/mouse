@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.4.2 (Fri, 09 Dec 2016 01:56:39 GMT)
+ * Version: 0.4.4 (Mon, 12 Dec 2016 14:25:55 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -88,13 +88,15 @@ state.set({
 			monitorMove: false,
 			monitor: [], // add "mouse" to initiate monitoring
 			mouse: {
-				states: ["up", "down", "move", "over", "drag"] // limit the monitored actions by defining a subset
+				target: false,
+				log: true,
+				states: ["up", "down", "move", "over", "drag"] // available states
 			}
 		},
 
-		params: params,
+		params: params.clone(),
 
-		state: state,
+		state: state.clone(),
 
 		// enable these instead of _monitorX methods
 		events: _.extend({}, View.prototype.events, {
@@ -149,35 +151,40 @@ state.set({
 			// prerequisite
 			if( !this.el ) return;
 			// variables
-			var states = this.options.mouse.states;
+			var states = this.options.mouse.states || [];
+			var el = (this.options.mouse.target) ? $(this.options.mouse.target).get(0) : $(this.el).get(0);
 
 			if( _.inArray("move", states) ){
-				this.el.addEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
+				el.addEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
 			}
 			if( _.inArray("down", states) ){
-				this.el.addEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
+				el.addEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
 			}
 			if( _.inArray("up", states) ){
-				this.el.addEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
+				el.addEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
 			}
-
+			// update state 
+			this.state.set('mouse', states);
 		},
 
 		_monitorMouseOff: function(){
 			// prerequisite
 			if( !this.el ) return;
 			// variables
-			var states = this.options.mouse.states;
+			var states = this.state.get('mouse') || [];
+			var el = (this.options.mouse.target) ? $(this.options.mouse.target).get(0) : $(this.el).get(0);
 
 			if( _.inArray("move", states) ){
-				this.el.removeEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
+				el.removeEventListener( 'mousemove', _.bind( this._mousemove, this ), false );
 			}
 			if( _.inArray("down", states) ){
-				this.el.removeEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
+				el.removeEventListener( 'mousedown', _.bind( this._mousedown, this ), false );
 			}
 			if( _.inArray("up", states) ){
-				this.el.removeEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
+				el.removeEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
 			}
+			// remove state 
+			this.state.set('mouse', false);
 		},
 
 		// events
@@ -186,7 +193,7 @@ state.set({
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("down", this.options.mouse.states);
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
-			if( _.inDebug() ) console.log("mouse pressed", e);
+			if( this.options.mouse.log && _.inDebug() ) console.log("mouse pressed", e);
 			// set state
 			this.state.set("pressing", true);
 			this.trigger("mousedown", e);
@@ -198,7 +205,7 @@ state.set({
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("up", this.options.mouse.states);
 			if( !monitor ) return;
 			if (e.stopPropagation) e.stopPropagation();
-			if( _.inDebug() ) console.log("mouse released", e);
+			if( this.options.mouse.log && _.inDebug() ) console.log("mouse released", e);
 			// set state
 			this.state.set("pressing", false);
 			this.trigger("mouseup", e);
@@ -227,14 +234,14 @@ state.set({
 				}
 			});
 			// use pageX instead of clientX?
-			if( _.inDebug() ) console.log("mousemove", this);
+			if( this.options.mouse.log && _.inDebug() ) console.log("mousemove", this);
 			if(this.mousemove) this.mousemove( e );
 		},
 		// drag events callbacks
 		_dragstart: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_dragstart");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_dragstart");
 			//if (e.preventDefault) e.preventDefault();
 			this.state.set("drag", true);
 			//e.dataTransfer.effectAllowed = 'copy'; // only dropEffect='copy' will be dropable
@@ -244,7 +251,7 @@ state.set({
 		_dragenter: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_dragenter");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_dragenter");
 			//if (e.preventDefault) e.preventDefault();
 			this.trigger("dragenter", e);
 			return false;
@@ -252,7 +259,7 @@ state.set({
 		_dragover: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_dragover");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_dragover");
 			if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 			this.trigger("dragover", e);
@@ -260,14 +267,14 @@ state.set({
 		_dragleave: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_dragleave");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_dragleave");
 			//if (e.preventDefault) e.preventDefault();
 			this.trigger("dragleave", e);
 		},
 		_drop: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_drop");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_drop");
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 			this.trigger("drop", e);
 			return false;
@@ -275,7 +282,7 @@ state.set({
 		_dragend: function( e ) {
 			var monitor = _.inArray("mouse", this.options.monitor) && _.inArray("drag", this.options.mouse.states);
 			if( !monitor ) return;
-			if( _.inDebug() ) console.log("_dragend");
+			if( this.options.mouse.log && _.inDebug() ) console.log("_dragend");
 			//if (e.preventDefault) e.preventDefault();
 			if (e.stopPropagation) e.stopPropagation(); // stops the browser from redirecting.
 			this.trigger("dragend", e);
