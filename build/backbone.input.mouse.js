@@ -2,7 +2,7 @@
  * @name backbone.input.mouse
  * Mouse event bindings for Backbone views
  *
- * Version: 0.4.4 (Mon, 12 Dec 2016 14:25:55 GMT)
+ * Version: 0.4.5 (Wed, 22 Feb 2017 01:05:02 GMT)
  * Homepage: https://github.com/backbone-input/mouse
  *
  * @author makesites
@@ -90,7 +90,7 @@ state.set({
 			mouse: {
 				target: false,
 				log: true,
-				states: ["up", "down", "move", "over", "drag"] // available states
+				states: ["up", "down", "move", "over", "drag", "drop"] // available states
 			}
 		},
 
@@ -105,12 +105,12 @@ state.set({
 			//'mousedown' : '_mousedown',
 			//'mouseup' : '_mouseup',
 			// drag events
-			'dragstart' : '_dragstart',
-			'dragenter' : '_dragenter',
-			'dragover' : '_dragover',
-			'dragleave' : '_dragleave',
-			'drop' : '_drop',
-			'dragend' : '_dragend'
+			//'dragstart' : '_dragstart',
+			//'dragenter' : '_dragenter',
+			//'dragover' : '_dragover',
+			//'dragleave' : '_dragleave',
+			//'drop' : '_drop',
+			//'dragend' : '_dragend'
 		}),
 		//
 		initialize: function( options ){
@@ -163,7 +163,18 @@ state.set({
 			if( _.inArray("up", states) ){
 				el.addEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
 			}
-			// update state 
+			if( _.inArray("drag", states) ){
+				el.addEventListener( 'dragstart',   _.bind( this._dragstart, this ), false );
+				el.addEventListener( 'dragenter',   _.bind( this._dragenter, this ), false );
+				el.addEventListener( 'dragover',   _.bind( this._dragover, this ), false );
+				el.addEventListener( 'dragleave',   _.bind( this._dragleave, this ), false );
+				el.addEventListener( 'dragend',   _.bind( this._dragend, this ), false );
+			}
+			if( _.inArray("drop", states) ){
+				el.addEventListener( 'drop',   _.bind( this._drop, this ), false );
+			}
+
+			// update state
 			this.state.set('mouse', states);
 		},
 
@@ -183,7 +194,18 @@ state.set({
 			if( _.inArray("up", states) ){
 				el.removeEventListener( 'mouseup',   _.bind( this._mouseup, this ), false );
 			}
-			// remove state 
+			if( _.inArray("drag", states) ){
+				el.removeEventListener( 'dragstart',   _.bind( this._dragstart, this ), false );
+				el.removeEventListener( 'dragenter',   _.bind( this._dragenter, this ), false );
+				el.removeEventListener( 'dragover',   _.bind( this._dragover, this ), false );
+				el.removeEventListener( 'dragleave',   _.bind( this._dragleave, this ), false );
+				el.removeEventListener( 'dragend',   _.bind( this._dragend, this ), false );
+			}
+			if( _.inArray("drop", states) ){
+				el.removeEventListener( 'drop',   _.bind( this._drop, this ), false );
+			}
+
+			// remove state
 			this.state.set('mouse', false);
 		},
 
